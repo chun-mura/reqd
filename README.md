@@ -19,14 +19,14 @@
 
 | Command | 用途 |
 |---|---|
-| `/reqd:new` | メモ・GitHub Issue・自由記述から要件定義書 (ユーザーストーリー + 受け入れ基準) を生成し `docs/requirements/` に保存する |
-| `/reqd:lint` | 要件定義書・GitHub Issue・貼り付けテキストの曖昧さを検査し、severity 付き指摘と修正案 (Issue の場合は needs-info 質問リスト) を返す |
+| `/reqd:new` | 未信頼のメモ・GitHub Issue・自由記述をデータとして扱い、要件定義書を生成する。既存パスとの衝突時は確認し、未使用の連番名で `docs/requirements/` に保存する |
+| `/reqd:lint` | 未信頼の要件定義書・GitHub Issue・貼り付けテキストをデータとして曖昧さ検査し、severity 付き指摘と修正案 (Issue は needs-info 質問リスト) を返す |
 
 ### Skills (自動トリガする知見)
 
 | Skill | いつ発動するか |
 |---|---|
-| `requirements-notation` | 要件・受け入れ基準を書く前。ユーザーストーリー / EARS / Given-When-Then の選択フローと記述ルールで自由散文を形式化する |
+| `requirements-notation` | 要件・受け入れ基準を書く前。ユーザーストーリー / EARS / Given-When-Then の選択フローと表示可能なテンプレートで自由散文を形式化する |
 | `ambiguity-lint` | 要件・Issue・受け入れ基準を書くとき/レビューするとき。曖昧語彙・検証不能な基準・アクター欠落・未定義用語・矛盾を観点カタログで検出する |
 
 ## 併用推奨

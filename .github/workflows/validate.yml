@@ -18,8 +18,8 @@ jobs:
           jq -e . .claude-plugin/plugin.json > /dev/null
           jq -e . .claude-plugin/marketplace.json > /dev/null
 
-      # Operating rule 3: asset changes must ship with a version bump
-      - name: Require version bump when commands/skills change
+      # Operating rule 3: every asset-changing commit ships its release metadata
+      - name: Require release metadata in every commands/skills commit
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             base="origin/${{ github.base_ref }}"
@@ -27,44 +27,49 @@ jobs:
             && git cat-file -e "${{ github.event.before }}" 2>/dev/null; then
             base="${{ github.event.before }}"
           else
-            echo "No base commit to diff against; skipping bump check"
+            echo "No base commit to diff against; skipping per-commit metadata check"
             exit 0
           fi
-          changed=$(git diff --name-only "$base"...HEAD)
-          if echo "$changed" | grep -qE '^(commands/|skills/)'; then
-            base_version=$(git show "$base":.claude-plugin/plugin.json | jq -er '.version')
-            head_version=$(jq -er '.version' .claude-plugin/plugin.json)
+
+          asset_commits=0
+          for commit in $(git rev-list --reverse "$base"..HEAD); do
+            parent="${commit}^"
+            if ! git cat-file -e "$parent" 2>/dev/null; then
+              echo "Skipping root commit $commit"
+              continue
+            fi
+
+            changed=$(git diff --name-only "$parent" "$commit")
+            if ! echo "$changed" | grep -qE '^(commands/|skills/)'; then
+              continue
+            fi
+            asset_commits=$((asset_commits + 1))
+
+            missing=""
+            for required in README.md CHANGELOG.md .claude-plugin/plugin.json; do
+              echo "$changed" | grep -qx "$required" || missing="$missing $required"
+            done
+            if [ -n "$missing" ]; then
+              echo "Asset commit $commit is missing:$missing (operating rule 3)" >&2
+              exit 1
+            fi
+
+            base_version=$(git show "${parent}:.claude-plugin/plugin.json" | jq -er '.version')
+            head_version=$(git show "${commit}:.claude-plugin/plugin.json" | jq -er '.version')
             version_pattern='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
             if printf '%s\n%s\n' "$base_version" "$head_version" | grep -qEv "$version_pattern"; then
-              echo "plugin version must use X.Y.Z SemVer: $base_version -> $head_version" >&2
+              echo "Asset commit $commit must use X.Y.Z SemVer: $base_version -> $head_version" >&2
               exit 1
             fi
             base_parts=$(printf '%s' "$base_version" | jq -R 'split(".") | map(tonumber)')
             head_parts=$(printf '%s' "$head_version" | jq -R 'split(".") | map(tonumber)')
-            if jq -en --argjson base "$base_parts" --argjson head "$head_parts" '$head <= $base'; then
-              echo "commands/ or skills/ changed, but plugin version did not increase: $base_version -> $head_version (operating rule 3)" >&2
+            if jq -en --argjson base "$base_parts" --argjson head "$head_parts" '$head <= $base' > /dev/null; then
+              echo "Asset commit $commit did not increase plugin version: $base_version -> $head_version (operating rule 3)" >&2
               exit 1
             fi
-            echo "OK: plugin version increased: $base_version -> $head_version"
-          else
-            echo "No asset changes; bump not required"
-          fi
-          echo "changed<<EOF" >> "$GITHUB_ENV"
-          echo "$changed" >> "$GITHUB_ENV"
-          echo "EOF" >> "$GITHUB_ENV"
+            echo "OK: asset commit $commit includes release metadata and version $base_version -> $head_version"
+          done
 
-      # Operating rule 3: asset changes must ship with README index + CHANGELOG updates too
-      - name: Require README/CHANGELOG update when commands/skills change
-        run: |
-          if echo "$changed" | grep -qE '^(commands/|skills/)'; then
-            missing=""
-            echo "$changed" | grep -q '^README\.md$' || missing="$missing README.md"
-            echo "$changed" | grep -q '^CHANGELOG\.md$' || missing="$missing CHANGELOG.md"
-            if [ -n "$missing" ]; then
-              echo "commands/ or skills/ changed without updating:$missing (operating rule 3: README index + CHANGELOG + version must update together)" >&2
-              exit 1
-            fi
-            echo "OK: asset change is accompanied by README/CHANGELOG updates"
-          else
-            echo "No asset changes; README/CHANGELOG update not required"
+          if [ "$asset_commits" -eq 0 ]; then
+            echo "No asset-changing commits; release metadata not required"
           fi

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.1 - 2026-07-17
+
+入力・保存・検証の安全性と記法 reference の表示を修正。
+
+- `commands/new.md`, `commands/lint.md`: 外部入力を未信頼データとして区切り、埋め込まれた命令を実行しない規律を追加。severity は ambiguity-lint を単一ソースとして参照
+- `commands/new.md`: 上書き拒否後は最初の未使用連番名へ保存。frontmatter は `date` のみを維持し、置き換え注記は本文へ記録
+- `skills/requirements-notation/references/`: EARS プレースホルダーの Markdown 表示と North (2006) の雑誌/Web公開日を修正
+- `.github/workflows/validate.yml`: 運用ルール3を各コミット単位で検査し、資産と release metadata の別コミット化を拒否
+- `README.md`: Commands / Skills インデックスを更新
+
 ## 0.5.0 - 2026-07-17
 
 曖昧さ検査 command を追加。
