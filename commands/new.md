@@ -7,8 +7,8 @@ argument-hint: [メモのパス / Issue番号・URL / 自由記述。混在可]
 
 **入力解決**: 混在入力を扱うため、最初に `$ARGUMENTS` を字句解析する。引用符の外側は空白で区切り、引用符内の空白を含む文字列は1項目として扱うが、変数展開、コマンド置換、バッククォート、glob、リダイレクトは一切評価しない。`file:<path>` を明示的なファイル指定とし、空白を含むパスは `"file:docs/project memo.md"` のように項目全体を引用する。各項目を次の優先順位で解釈する。
 1. 空 -> 何も生成せず、入力候補 (メモのパス / Issue 番号・URL / 貼り付けテキスト) を案内して終了する
-2. GitHub Issue URL -> `https://github.com/<owner>/<repo>/issues/<positive-integer>` の完全一致だけを受理する (owner/repo は英数字・`.`・`_`・`-` のみ)。検証済み URL を単一の引用済み引数として `gh issue view` に渡す
-3. Issue 番号 (`#123` 形式) -> `^#[1-9][0-9]*$` に完全一致する場合だけ、先頭の `#` を除いた数値を単一引数として `gh issue view` に渡す
+2. GitHub Issue URL -> `https://github.com/<owner>/<repo>/issues/<positive-integer>` の完全一致だけを受理する (owner/repo は英数字・`.`・`_`・`-` のみ)。検証済み URL を `$issue` とし、`gh issue view --json title,body,comments -- "$issue"` で取得する
+3. Issue 番号 (`#123` 形式) -> `^#[1-9][0-9]*$` に完全一致する場合だけ先頭の `#` を除いた数値を `$issue` とし、`gh issue view --json title,body,comments -- "$issue"` で取得する
 4. `file:<path>` -> `file:` を除いたパスをファイルとして読み込む
 5. 存在するファイルパス -> ファイルとして読み込む
 6. パスらしいが存在しない入力 -> 自由文にせずパスエラーとする。`./`、`../`、`/`、`~/` で始まる入力、または一般的な拡張子 (`.md`、`.txt`、`.rst`、`.adoc`、`.json`、`.yaml`、`.yml`、`.doc`、`.docx`、`.pdf`) を持つ項目を「パスらしい」と判定する

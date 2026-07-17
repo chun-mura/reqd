@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.3 - 2026-07-17
+
+GitHub Issue 取得フィールドを固定。
+
+- `commands/new.md`, `commands/lint.md`: 検証済み Issue URL/番号を単一引数として渡し、`title`, `body`, `comments` を常に取得する
+- `README.md`: Commands インデックスを更新
+
 ## 0.5.2 - 2026-07-17
 
 未信頼入力の取得境界を追加で強化。
