@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 - 2026-07-17
+
+要件定義書の生成 command を追加。
+
+- `commands/new.md`: `/reqd:new` — 入力 (ファイル / Issue / 自由記述) をユーザーストーリーに分解し、受け入れ基準を EARS / Given-When-Then で形式化して `docs/requirements/YYYY-MM-DD-<slug>.md` に生成する。入力から導出できない項目は open_questions へ (黙認的補完の禁止)。サイレント上書き禁止 (存在チェック + 差分提示 + 確認)
+- `README.md`: Commands インデックスに /reqd:new を追加
+
 ## 0.3.0 - 2026-07-17
 
 曖昧さ検査の基準 skill を追加。
