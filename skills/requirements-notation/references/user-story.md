@@ -26,5 +26,5 @@ Small / Independent を満たさないストーリーは、次のいずれかの
 
 ## 科学的根拠
 
-- Wake, B. (2003). "INVEST in Good Stories, and SMART Tasks". 2003-08-17. https://xp123.com/articles/invest-in-good-stories-and-smart-tasks/ — INVEST 基準の原典
+- Wake, B. (2003). "INVEST in Good Stories, and SMART Tasks". 2003-08-17. https://xp123.com/invest-in-good-stories-and-smart-tasks/ — INVEST 基準の原典
 - Cohn, M. (2004). "User Stories Applied: For Agile Software Development". Addison-Wesley. — ユーザーストーリー形式と受け入れ基準の体系化

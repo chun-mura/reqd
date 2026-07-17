@@ -1,6 +1,6 @@
 {
   "name": "reqd",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "Requirements definition toolkit: user story decomposition, acceptance criteria formalization (EARS / Given-When-Then), and requirements ambiguity lint",
   "author": { "name": "chun-mura" },
   "homepage": "https://github.com/chun-mura/reqd",

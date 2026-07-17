@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.6 - 2026-07-17
+
+受入レビュー指摘の是正 (出典の監査証跡・シングルソース違反)。
+
+- `.superpowers/sdd/source-verification.md`: 全9出典の外部照合結果 (判定・根拠 URL・検索クエリ) を監査証跡として記録。掲載ルール「検証できない出典は掲載禁止」の履行を追跡可能にした
+- `skills/requirements-notation/references/given-when-then.md`, `user-story.md`: 照合で判明した現行 URL パスへ修正 (dannorth.net/blog/、xp123.com の /articles/ なし版)
+- `skills/ambiguity-lint/input-safety.md`: 「パス判定」節を新設し、両 command に重複していた「パスらしい」判定基準 (プレフィックス・拡張子リスト) を集約
+- `commands/new.md`, `commands/lint.md`: パス判定の重複記載を削除し input-safety への参照に置換 (シングルソース回復)
+- `README.md`: Commands / Skills インデックスを更新
+
 ## 0.5.5 - 2026-07-17
 
 生成物への stored prompt injection を防止。

@@ -25,5 +25,5 @@
 
 ## 科学的根拠
 
-- North, D. (2006). "Introducing BDD". Better Software Magazine, March 2006; Web version published 20 Sep 2006. https://dannorth.net/introducing-bdd/ — Given-When-Then テンプレートの原典
+- North, D. (2006). "Introducing BDD". Better Software Magazine, March 2006. https://dannorth.net/blog/introducing-bdd/ — Given-When-Then テンプレートの原典
 - Gherkin Reference. Cucumber 公式ドキュメント. https://cucumber.io/docs/gherkin/reference — Given/When/Then 構文の仕様

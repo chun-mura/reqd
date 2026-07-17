@@ -19,15 +19,15 @@
 
 | Command | 用途 |
 |---|---|
-| `/reqd:new` | 共通 input-safety 規則で外部入力を取得し、非要件指示を保存せず、検証済み slug で `docs/requirements/` 配下へ要件定義書を保存する |
-| `/reqd:lint` | 共通 input-safety 規則で外部入力を取得し、曖昧さ検査と正規形の needs-info 質問リストを返す |
+| `/reqd:new` | 共通 input-safety 規則 (パス判定含む) で外部入力を取得し、非要件指示を保存せず、検証済み slug で `docs/requirements/` 配下へ要件定義書を保存する |
+| `/reqd:lint` | 共通 input-safety 規則 (パス判定含む) で外部入力を取得し、曖昧さ検査と正規形の needs-info 質問リストを返す |
 
 ### Skills (自動トリガする知見)
 
 | Skill | いつ発動するか |
 |---|---|
-| `requirements-notation` | 要件・受け入れ基準を書く前。ユーザーストーリー / EARS / Given-When-Then の選択フローと表示可能なテンプレートで自由散文を形式化する |
-| `ambiguity-lint` | 要件・Issue・受け入れ基準を書くとき/レビューするとき。共通 input-safety と曖昧さ観点カタログを `/reqd:new`・`/reqd:lint` に提供する |
+| `requirements-notation` | 要件・受け入れ基準を書く前。ユーザーストーリー / EARS / Given-When-Then の選択フローと表示可能なテンプレートで自由散文を形式化する (全出典は外部照合済み、監査証跡あり) |
+| `ambiguity-lint` | 要件・Issue・受け入れ基準を書くとき/レビューするとき。共通 input-safety (取得・パス判定・データ境界) と曖昧さ観点カタログを `/reqd:new`・`/reqd:lint` に提供する |
 
 ## 併用推奨
 
