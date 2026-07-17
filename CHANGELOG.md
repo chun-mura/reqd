@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.2 - 2026-07-17
+
+未信頼入力の取得境界を追加で強化。
+
+- `commands/new.md`, `commands/lint.md`: 引数の shell 展開を禁止し、Issue URL/番号を完全一致で検証。パスを不透明な値として扱い、`eval` とコマンド文字列連結を禁止
+- `commands/new.md`, `commands/lint.md`: 入力本文と衝突しない UUID 付き境界を入力ごとに生成し、delimiter breakout を防止
+- `.github/workflows/validate.yml`: 初回 push と root commit もコミット単位検査の対象に変更
+- `README.md`: Commands インデックスを更新
+
 ## 0.5.1 - 2026-07-17
 
 入力・保存・検証の安全性と記法 reference の表示を修正。

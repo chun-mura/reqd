@@ -23,23 +23,27 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             base="origin/${{ github.base_ref }}"
+            commits=$(git rev-list --reverse "$base"..HEAD)
           elif [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ] \
             && git cat-file -e "${{ github.event.before }}" 2>/dev/null; then
             base="${{ github.event.before }}"
+            commits=$(git rev-list --reverse "$base"..HEAD)
           else
-            echo "No base commit to diff against; skipping per-commit metadata check"
-            exit 0
+            echo "No base commit to diff against; checking the complete history"
+            commits=$(git rev-list --reverse HEAD)
           fi
 
           asset_commits=0
-          for commit in $(git rev-list --reverse "$base"..HEAD); do
+          for commit in $commits; do
             parent="${commit}^"
-            if ! git cat-file -e "$parent" 2>/dev/null; then
-              echo "Skipping root commit $commit"
-              continue
+            root_commit=false
+            if git cat-file -e "$parent" 2>/dev/null; then
+              changed=$(git diff --name-only "$parent" "$commit")
+            else
+              root_commit=true
+              changed=$(git diff-tree --root --no-commit-id --name-only -r "$commit")
             fi
 
-            changed=$(git diff --name-only "$parent" "$commit")
             if ! echo "$changed" | grep -qE '^(commands/|skills/)'; then
               continue
             fi
@@ -54,20 +58,28 @@ jobs:
               exit 1
             fi
 
-            base_version=$(git show "${parent}:.claude-plugin/plugin.json" | jq -er '.version')
             head_version=$(git show "${commit}:.claude-plugin/plugin.json" | jq -er '.version')
             version_pattern='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
-            if printf '%s\n%s\n' "$base_version" "$head_version" | grep -qEv "$version_pattern"; then
-              echo "Asset commit $commit must use X.Y.Z SemVer: $base_version -> $head_version" >&2
+            if ! printf '%s\n' "$head_version" | grep -qE "$version_pattern"; then
+              echo "Asset commit $commit must use X.Y.Z SemVer: $head_version" >&2
               exit 1
             fi
-            base_parts=$(printf '%s' "$base_version" | jq -R 'split(".") | map(tonumber)')
-            head_parts=$(printf '%s' "$head_version" | jq -R 'split(".") | map(tonumber)')
-            if jq -en --argjson base "$base_parts" --argjson head "$head_parts" '$head <= $base' > /dev/null; then
-              echo "Asset commit $commit did not increase plugin version: $base_version -> $head_version (operating rule 3)" >&2
-              exit 1
+            if [ "$root_commit" = true ]; then
+              echo "OK: root asset commit $commit includes release metadata and initial version $head_version"
+            else
+              base_version=$(git show "${parent}:.claude-plugin/plugin.json" | jq -er '.version')
+              if ! printf '%s\n' "$base_version" | grep -qE "$version_pattern"; then
+                echo "Parent of asset commit $commit has invalid X.Y.Z SemVer: $base_version" >&2
+                exit 1
+              fi
+              base_parts=$(printf '%s' "$base_version" | jq -R 'split(".") | map(tonumber)')
+              head_parts=$(printf '%s' "$head_version" | jq -R 'split(".") | map(tonumber)')
+              if jq -en --argjson base "$base_parts" --argjson head "$head_parts" '$head <= $base' > /dev/null; then
+                echo "Asset commit $commit did not increase plugin version: $base_version -> $head_version (operating rule 3)" >&2
+                exit 1
+              fi
+              echo "OK: asset commit $commit includes release metadata and version $base_version -> $head_version"
             fi
-            echo "OK: asset commit $commit includes release metadata and version $base_version -> $head_version"
           done
 
           if [ "$asset_commits" -eq 0 ]; then
