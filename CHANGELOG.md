@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 - 2026-07-17
+
+曖昧さ検査の基準 skill を追加。
+
+- `skills/ambiguity-lint/`: 観点カタログ8項目 + severity 判定 (high/mid/low) + 指摘形式。/reqd:lint と /reqd:new 自己チェックのシングルソース。検証済み出典付き (ISO/IEC/IEEE 29148:2018 / Berry et al. 2003 / Wilson et al. 1997)
+- `README.md`: Skills インデックスに ambiguity-lint を追加
+
 ## 0.2.0 - 2026-07-17
 
 要件記法の中核 skill を追加。
