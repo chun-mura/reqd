@@ -32,12 +32,20 @@ jobs:
           fi
           changed=$(git diff --name-only "$base"...HEAD)
           if echo "$changed" | grep -qE '^(commands/|skills/)'; then
-            if git diff "$base"...HEAD -- .claude-plugin/plugin.json | grep -q '"version"'; then
-              echo "OK: asset change is accompanied by a version bump"
-            else
-              echo "commands/ or skills/ changed without a version bump in .claude-plugin/plugin.json (operating rule 3)" >&2
+            base_version=$(git show "$base":.claude-plugin/plugin.json | jq -er '.version')
+            head_version=$(jq -er '.version' .claude-plugin/plugin.json)
+            version_pattern='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+            if printf '%s\n%s\n' "$base_version" "$head_version" | grep -qEv "$version_pattern"; then
+              echo "plugin version must use X.Y.Z SemVer: $base_version -> $head_version" >&2
               exit 1
             fi
+            base_parts=$(printf '%s' "$base_version" | jq -R 'split(".") | map(tonumber)')
+            head_parts=$(printf '%s' "$head_version" | jq -R 'split(".") | map(tonumber)')
+            if jq -en --argjson base "$base_parts" --argjson head "$head_parts" '$head <= $base'; then
+              echo "commands/ or skills/ changed, but plugin version did not increase: $base_version -> $head_version (operating rule 3)" >&2
+              exit 1
+            fi
+            echo "OK: plugin version increased: $base_version -> $head_version"
           else
             echo "No asset changes; bump not required"
           fi
