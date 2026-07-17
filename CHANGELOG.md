@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.5 - 2026-07-17
+
+生成物への stored prompt injection を防止。
+
+- `commands/new.md`: 生成物へ取り込む情報の allowlist を定義し、入力内の命令・役割変更・ツール指示を引用・転載しない規則を追加
+- `README.md`: `/reqd:new` のインデックスを更新
+
 ## 0.5.4 - 2026-07-17
 
 出力パス境界と intake/metadata の単一ソース性を強化。

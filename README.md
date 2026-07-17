@@ -19,7 +19,7 @@
 
 | Command | 用途 |
 |---|---|
-| `/reqd:new` | 共通 input-safety 規則で外部入力を取得し、検証済み slug とリンクを含まない `docs/requirements/` 配下へ要件定義書を保存する |
+| `/reqd:new` | 共通 input-safety 規則で外部入力を取得し、非要件指示を保存せず、検証済み slug で `docs/requirements/` 配下へ要件定義書を保存する |
 | `/reqd:lint` | 共通 input-safety 規則で外部入力を取得し、曖昧さ検査と正規形の needs-info 質問リストを返す |
 
 ### Skills (自動トリガする知見)
