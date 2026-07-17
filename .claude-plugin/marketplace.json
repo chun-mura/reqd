@@ -1,0 +1,14 @@
+{
+  "name": "reqd",
+  "description": "Marketplace for the reqd requirements definition toolkit",
+  "owner": { "name": "chun-mura" },
+  "plugins": [
+    {
+      "name": "reqd",
+      "source": ".",
+      "description": "Requirements definition toolkit: user story decomposition, acceptance criteria formalization (EARS / Given-When-Then), and requirements ambiguity lint",
+      "category": "workflow",
+      "tags": ["requirements", "user-story", "ears", "given-when-then", "ambiguity-lint"]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "reqd",
+  "version": "0.1.0",
+  "description": "Requirements definition toolkit: user story decomposition, acceptance criteria formalization (EARS / Given-When-Then), and requirements ambiguity lint",
+  "author": { "name": "chun-mura" },
+  "homepage": "https://github.com/chun-mura/reqd",
+  "repository": "https://github.com/chun-mura/reqd",
+  "license": "MIT",
+  "keywords": ["requirements", "user-story", "acceptance-criteria", "ears", "ambiguity-lint"]
+}

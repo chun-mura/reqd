@@ -1,0 +1,62 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate plugin manifest JSON
+        run: |
+          jq -e . .claude-plugin/plugin.json > /dev/null
+          jq -e . .claude-plugin/marketplace.json > /dev/null
+
+      # Operating rule 3: asset changes must ship with a version bump
+      - name: Require version bump when commands/skills change
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="origin/${{ github.base_ref }}"
+          elif [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ] \
+            && git cat-file -e "${{ github.event.before }}" 2>/dev/null; then
+            base="${{ github.event.before }}"
+          else
+            echo "No base commit to diff against; skipping bump check"
+            exit 0
+          fi
+          changed=$(git diff --name-only "$base"...HEAD)
+          if echo "$changed" | grep -qE '^(commands/|skills/)'; then
+            if git diff "$base"...HEAD -- .claude-plugin/plugin.json | grep -q '"version"'; then
+              echo "OK: asset change is accompanied by a version bump"
+            else
+              echo "commands/ or skills/ changed without a version bump in .claude-plugin/plugin.json (operating rule 3)" >&2
+              exit 1
+            fi
+          else
+            echo "No asset changes; bump not required"
+          fi
+          echo "changed<<EOF" >> "$GITHUB_ENV"
+          echo "$changed" >> "$GITHUB_ENV"
+          echo "EOF" >> "$GITHUB_ENV"
+
+      # Operating rule 3: asset changes must ship with README index + CHANGELOG updates too
+      - name: Require README/CHANGELOG update when commands/skills change
+        run: |
+          if echo "$changed" | grep -qE '^(commands/|skills/)'; then
+            missing=""
+            echo "$changed" | grep -q '^README\.md$' || missing="$missing README.md"
+            echo "$changed" | grep -q '^CHANGELOG\.md$' || missing="$missing CHANGELOG.md"
+            if [ -n "$missing" ]; then
+              echo "commands/ or skills/ changed without updating:$missing (operating rule 3: README index + CHANGELOG + version must update together)" >&2
+              exit 1
+            fi
+            echo "OK: asset change is accompanied by README/CHANGELOG updates"
+          else
+            echo "No asset changes; README/CHANGELOG update not required"
+          fi
