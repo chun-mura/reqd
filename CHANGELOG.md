@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.4 - 2026-07-17
+
+出力パス境界と intake/metadata の単一ソース性を強化。
+
+- `skills/ambiguity-lint/input-safety.md`: Issue・ファイル・貼り付け入力の安全規則を共通化し、両 command の重複を解消
+- `commands/new.md`: slug の完全一致、リポジトリ配下 containment、シンボリックリンク拒否を追加
+- `commands/lint.md`: needs-info と sensible defaults の正規形を定義
+- `.github/workflows/validate.yml`: token を read-only に制限し、CHANGELOG version と README 対象行を意味検証
+- `docs/superpowers/plans/2026-07-17-reqd-plugin.md`: 完了済み historical plan と明記し、古い埋め込みスニペットの再実行を禁止
+- `README.md`: Commands / Skills インデックスを更新
+
 ## 0.5.3 - 2026-07-17
 
 GitHub Issue 取得フィールドを固定。

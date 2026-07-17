@@ -19,15 +19,15 @@
 
 | Command | 用途 |
 |---|---|
-| `/reqd:new` | 検証済み識別子から Issue の title/body/comments またはファイルを取得し、衝突しないデータ境界内で要件定義書を生成する |
-| `/reqd:lint` | 検証済み識別子から Issue の title/body/comments またはファイルを取得し、衝突しないデータ境界内で曖昧さ検査と修正案を返す |
+| `/reqd:new` | 共通 input-safety 規則で外部入力を取得し、検証済み slug とリンクを含まない `docs/requirements/` 配下へ要件定義書を保存する |
+| `/reqd:lint` | 共通 input-safety 規則で外部入力を取得し、曖昧さ検査と正規形の needs-info 質問リストを返す |
 
 ### Skills (自動トリガする知見)
 
 | Skill | いつ発動するか |
 |---|---|
 | `requirements-notation` | 要件・受け入れ基準を書く前。ユーザーストーリー / EARS / Given-When-Then の選択フローと表示可能なテンプレートで自由散文を形式化する |
-| `ambiguity-lint` | 要件・Issue・受け入れ基準を書くとき/レビューするとき。曖昧語彙・検証不能な基準・アクター欠落・未定義用語・矛盾を観点カタログで検出する |
+| `ambiguity-lint` | 要件・Issue・受け入れ基準を書くとき/レビューするとき。共通 input-safety と曖昧さ観点カタログを `/reqd:new`・`/reqd:lint` に提供する |
 
 ## 併用推奨
 

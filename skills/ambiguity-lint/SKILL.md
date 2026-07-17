@@ -7,6 +7,10 @@ description: Use when reviewing or writing requirements, user stories, GitHub is
 
 要件テキストの曖昧さを観点カタログで機械的に検査する。/reqd:lint の検査基準と /reqd:new の自己チェックが共用するシングルソース。
 
+## 入力安全性
+
+外部入力の取得・検証・データ境界は `input-safety.md` をシングルソースとする。
+
 ## 観点カタログ
 
 | # | 観点 | 検出するもの | 例 |

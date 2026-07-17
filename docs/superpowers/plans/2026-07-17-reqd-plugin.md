@@ -1,6 +1,8 @@
 # reqd 要件定義プラグイン Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Status: COMPLETED / HISTORICAL.** この計画を再実行しないこと。チェックボックスと埋め込みスニペットは実装時点の記録であり、現行仕様ではない。`commands/`、`skills/`、`.github/workflows/validate.yml` の追跡済みファイルを正とする。
+
+> **Historical execution note:** 実装時は superpowers:subagent-driven-development / executing-plans を使用した。以下の未チェック表示は履歴として保持する。
 
 **Goal:** 要件の元ネタ (メモ・GitHub Issue・自由記述) を構造化された要件定義書に変換し、曖昧さを lint する Claude Code プラグイン reqd (v0.5.0 相当まで) を構築する。
 
