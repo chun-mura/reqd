@@ -79,17 +79,35 @@ jobs:
             fi
 
             # README row-level enforcement starts with the v0.5.4 policy migration.
+            # Surviving assets must touch their index row; deleted assets must drop it.
             head_parts=$(printf '%s' "$head_version" | jq -R 'split(".") | map(tonumber)')
             if jq -en --argjson head "$head_parts" '$head >= [0,5,4]' > /dev/null; then
               readme_diff=$(git show --format= "$commit" -- README.md)
-              assets=$(echo "$changed" | sed -nE \
-                -e 's#^commands/([^/]+)\.md$#/reqd:\1#p' \
-                -e 's#^skills/([^/]+)/.*$#\1#p' | sort -u)
-              for asset in $assets; do
-                if ! printf '%s\n' "$readme_diff" | grep -Fq "+| \`$asset\`"; then
-                  echo "Asset commit $commit does not update README index row for $asset" >&2
-                  exit 1
+              check_row() {
+                if [ "$2" = true ]; then
+                  if ! printf '%s\n' "$readme_diff" | grep -Fq -- "+| \`$1\`"; then
+                    echo "Asset commit $commit does not update README index row for $1" >&2
+                    exit 1
+                  fi
+                else
+                  if ! printf '%s\n' "$readme_diff" | grep -Fq -- "-| \`$1\`"; then
+                    echo "Asset commit $commit removes $1 but does not delete its README index row" >&2
+                    exit 1
+                  fi
+                  if printf '%s\n' "$readme_diff" | grep -Fq -- "+| \`$1\`"; then
+                    echo "Asset commit $commit removes $1 but README still adds an index row for it" >&2
+                    exit 1
+                  fi
                 fi
+              }
+              for path in $(echo "$changed" | grep -E '^commands/[^/]+\.md$' | sort -u); do
+                name="${path#commands/}"
+                if git cat-file -e "${commit}:${path}" 2>/dev/null; then exists=true; else exists=false; fi
+                check_row "/reqd:${name%.md}" "$exists"
+              done
+              for skill in $(echo "$changed" | sed -nE 's#^skills/([^/]+)/.*#\1#p' | sort -u); do
+                if git cat-file -e "${commit}:skills/${skill}/SKILL.md" 2>/dev/null; then exists=true; else exists=false; fi
+                check_row "$skill" "$exists"
               done
             fi
             if [ "$root_commit" = true ]; then
