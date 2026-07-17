@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 - 2026-07-17
+
+要件記法の中核 skill を追加。
+
+- `skills/requirements-notation/`: 記法選択フロー (SKILL.md) + 記法カタログ references 3ファイル (ユーザーストーリー・INVEST / EARS / Given-When-Then)。全記法に検証済み出典付き (Mavin et al. RE'09 / North 2006 / Wake 2003 / Cohn 2004)
+- `README.md`: Skills インデックスに requirements-notation を追加
+
 ## 0.1.0 - 2026-07-17
 
 初期スキャフォールド。プラグイン骨格 (plugin.json / marketplace.json / README / CI / LICENSE) と設計書のみで資産は未収録。

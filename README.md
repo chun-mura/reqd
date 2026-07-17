@@ -24,6 +24,7 @@
 
 | Skill | いつ発動するか |
 |---|---|
+| `requirements-notation` | 要件・受け入れ基準を書く前。ユーザーストーリー / EARS / Given-When-Then の選択フローと記述ルールで自由散文を形式化する |
 
 ## 併用推奨
 
