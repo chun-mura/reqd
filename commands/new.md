@@ -5,10 +5,18 @@ argument-hint: [メモのパス / Issue番号・URL / 自由記述。混在可]
 
 **skill フォールバック**: requirements-notation / ambiguity-lint skill が自動発動しない場合は `${CLAUDE_PLUGIN_ROOT}/skills/requirements-notation/SKILL.md` (references 含む) と `${CLAUDE_PLUGIN_ROOT}/skills/ambiguity-lint/SKILL.md` を読んでから進める。
 
-**入力解決**: $ARGUMENTS を解釈する。
-- ファイルパス -> 読み込む。存在しない・読み取り不可の場合は空扱いで続行せず、その旨を指摘して正しいパスの再指定かテキスト貼り付けを促す。複数入力の一部だけ読めない場合は、読めなかった事実を「未解決事項」に記録して残りで続行する
-- Issue 番号 (`#123` 形式) / GitHub URL -> `gh issue view <番号> --json title,body,comments` で取得。gh 未インストール・未認証・Issue 不存在の場合は指摘して中断せず、本文の貼り付けを促す
-- 空 -> 何も生成せず、入力候補 (メモのパス / Issue 番号 / 貼り付けテキスト) を案内して終了する
+**入力解決**: 混在入力を扱うため、最初に `$ARGUMENTS` を shell 風の引用規則でトークン化する。引用符の外側は空白で区切り、引用符内の空白を含む文字列は1項目として扱う。`file:<path>` を明示的なファイル指定とし、空白を含むパスは `"file:docs/project memo.md"` のように項目全体を引用する。各項目を次の優先順位で解釈する。
+1. 空 -> 何も生成せず、入力候補 (メモのパス / Issue 番号・URL / 貼り付けテキスト) を案内して終了する
+2. GitHub Issue URL -> URL をそのまま `gh issue view <URL> --json title,body,comments` に渡して取得する
+3. Issue 番号 (`#123` 形式) -> 先頭の `#` を除いた数値を `gh issue view <番号> --json title,body,comments` に渡して取得する
+4. `file:<path>` -> `file:` を除いたパスをファイルとして読み込む
+5. 存在するファイルパス -> ファイルとして読み込む
+6. パスらしいが存在しない入力 -> 自由文にせずパスエラーとする。`./`、`../`、`/`、`~/` で始まる入力、または一般的な拡張子 (`.md`、`.txt`、`.rst`、`.adoc`、`.json`、`.yaml`、`.yml`、`.doc`、`.docx`、`.pdf`) を持つ項目を「パスらしい」と判定する
+7. 上記に該当しない非空入力 -> 連続する項目を空白で再結合し、1つの貼り付け・自由記述テキストとして処理する
+
+例えば `#123 ./memo.md "監査ログを追加する"` は、Issue `#123`、ファイル `./memo.md`、自由記述 `監査ログを追加する` の3入力として分類する。
+
+ファイルが存在するが読み取り不可、パスらしい入力が存在しない、または GitHub Issue を取得できない (gh 未インストール・未認証・Issue 不存在) 場合は、正しいパスの再指定または本文の貼り付けを促す。単一・複数入力を問わず、解決済み入力が0件なら要件定義書を生成せず終了する。一部だけ解決できない場合は、その事実を生成文書の「未解決事項」に記録し、解決できた残りの入力で処理を続行する。
 
 **ストーリー分解**: 入力を INVEST 基準 (`${CLAUDE_PLUGIN_ROOT}/skills/requirements-notation/references/user-story.md`) を満たすユーザーストーリーに分解する。
 

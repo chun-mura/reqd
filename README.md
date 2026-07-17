@@ -20,6 +20,7 @@
 | Command | 用途 |
 |---|---|
 | `/reqd:new` | メモ・GitHub Issue・自由記述から要件定義書 (ユーザーストーリー + 受け入れ基準) を生成し `docs/requirements/` に保存する |
+| `/reqd:lint` | 要件定義書・GitHub Issue・貼り付けテキストの曖昧さを検査し、severity 付き指摘と修正案 (Issue の場合は needs-info 質問リスト) を返す |
 
 ### Skills (自動トリガする知見)
 

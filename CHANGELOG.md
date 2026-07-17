@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 - 2026-07-17
+
+曖昧さ検査 command を追加。
+
+- `commands/lint.md`: `/reqd:lint` — ambiguity-lint の観点カタログで検査し、severity 降順の指摘リスト + 修正案を返す。対象が Issue の場合は needs-info 質問リスト (aidd-autopilot triage の questions と同形) も出力する。対象ファイルは変更しない (報告のみ)
+- `commands/lint.md`, `commands/new.md`: 入力判定の優先順位を統一し、Issue URL / `#番号` / `file:<path>` / 既存ファイルパス / 貼り付けテキストを正規化。`new` は shell 風の引用規則による混在入力と自由記述の再結合に対応し、存在しないパスらしい入力は自由文にせずエラーとして扱う
+- `README.md`: Commands インデックスに /reqd:lint を追加
+
 ## 0.4.0 - 2026-07-17
 
 要件定義書の生成 command を追加。
