@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.7 - 2026-07-20
+
+生成物 frontmatter に任意の試験フィールド `related`（自由記述）を導入。
+
+- `commands/new.md`: frontmatter を `date` 必須 + 任意 `related`（試験・省略可・発明禁止・下流非消費）へ拡張
+- `docs/design/2026-07-17-reqd-plugin-design.md`: 出力・テンプレート節を同期
+- `docs/verification/2026-07-20-related-trial.md`: 試験フィールドの受け入れ条件と正式化チェックリストを記録
+- `README.md`: `/reqd:new` インデックスを更新
+
 ## 0.5.6 - 2026-07-17
 
 受入レビュー指摘の是正 (出典の監査証跡・シングルソース違反)。

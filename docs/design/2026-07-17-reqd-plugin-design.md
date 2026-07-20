@@ -70,17 +70,17 @@ reqd/
   2. 各ストーリーに受け入れ基準を付与。記法は requirements-notation の選択ガイドに従う (システム挙動 → EARS、受け入れテスト化する基準 → GWT)
   3. スコープ外・未解決事項 (open_questions) を明示。**入力から導出できない項目は勝手に埋めず open_questions に列挙する** (estimate spec-analyzer と同じ規律)
   4. 生成後、ambiguity-lint 基準で自己チェック。振り分けルール: **意味を変えない書き換えで直せるもの (曖昧語彙の言い換え、受動態→能動態、文脈から一意に特定できる主語補完) は自己修正。数値・用語定義など入力にない情報の補完が必要なものは常に open_questions へ** (step 3 の原則の適用)
-- **出力**: `docs/requirements/YYYY-MM-DD-<slug>.md`、frontmatter は `date` のみ (status 遷移の主体が v1 に存在しないため status フィールドは持たない)。ディレクトリがなければ作成する
+- **出力**: `docs/requirements/YYYY-MM-DD-<slug>.md`、frontmatter は `date` 必須。任意で試験フィールド `related`（自由記述の単一スカラー。導出できないときはキー省略。status 遷移の主体が v1 に存在しないため status フィールドは持たない）。ディレクトリがなければ作成する。`related` は試験導入で、2 回の実案件利用後に正式化するまで形式・下流消費は保証しない
 - **出力パスのライフサイクル (サイレント上書きの禁止)**:
   1. 書き込み前に対象パスの存在を確認する
   2. 存在する場合はサイレント上書きせず、既存内容との差分を提示して上書き可否をユーザーに確認する
   3. 拒否された場合は `-2`, `-3`, ... を順に確認し、最初の未使用パスへ保存する (手編集の消失防止)
-  4. v1 の改訂ポリシー: 新規生成が既定。既存要件定義書の改訂はユーザーの手動編集で行う。frontmatter は `date` のみを維持し、置き換えは旧文書本文の `Superseded by: <新ファイル名>` 注記で明示する。上記の存在チェックはこのポリシーの安全弁
-- **末尾に次ステップのポインタ**: `/aidd:design-doc <path>`、`/estimate:new <path>` (検出は行わず常時表示する非強制の案内文。未インストールでも壊れない)
+  4. v1 の改訂ポリシー: 新規生成が既定。既存要件定義書の改訂はユーザーの手動編集で行う。frontmatter は `date` を必須で維持し、任意の `related` も手動改訂の対象とする。置き換えは旧文書本文の `Superseded by: <新ファイル名>` 注記で明示する。上記の存在チェックはこのポリシーの安全弁
+- **末尾に次ステップのポインタ**: `/aidd:design-doc <path>`、`/estimate:new <path>` (検出は行わず常時表示する非強制の案内文。未インストールでも壊れない。`related` は下流コマンドが読まない)
 
 ### 要件定義書テンプレート (new.md 内に規定)
 
-frontmatter (date) / 背景・目的 / ユーザーストーリー (As a / I want / So that) / 受け入れ基準 (EARS or GWT) / スコープ外 / 未解決事項 (open_questions) / 用語定義
+frontmatter (`date` 必須、任意で試験 `related`) / 背景・目的 / ユーザーストーリー (As a / I want / So that) / 受け入れ基準 (EARS or GWT) / スコープ外 / 未解決事項 (open_questions) / 用語定義
 
 ### /reqd:lint
 

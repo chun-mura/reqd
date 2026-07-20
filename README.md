@@ -19,7 +19,7 @@
 
 | Command | 用途 |
 |---|---|
-| `/reqd:new` | 共通 input-safety 規則 (パス判定含む) で外部入力を取得し、非要件指示を保存せず、検証済み slug で `docs/requirements/` 配下へ要件定義書を保存する |
+| `/reqd:new` | 共通 input-safety 規則 (パス判定含む) で外部入力を取得し、非要件指示を保存せず、検証済み slug で `docs/requirements/` 配下へ要件定義書を保存する。frontmatter は `date` 必須、任意で試験フィールド `related`（自由記述） |
 | `/reqd:lint` | 共通 input-safety 規則 (パス判定含む) で外部入力を取得し、曖昧さ検査と正規形の needs-info 質問リストを返す |
 
 ### Skills (自動トリガする知見)
