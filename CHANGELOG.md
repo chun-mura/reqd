@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.0 - 2026-10-27
+
+commands を skills に移し、Codex と Cursor でも使えるようにした。Claude Code での呼び出し方 (`/reqd:new`・`/reqd:lint`) は変わらない。
+
+- `skills/new/SKILL.md`, `skills/lint/SKILL.md`: `commands/new.md`・`commands/lint.md` から移動。`name` と `disable-model-invocation: true` を追加し、`${CLAUDE_PLUGIN_ROOT}/skills/...` を skill からの相対パスに変更。`$ARGUMENTS` が展開されないハーネスでの読み替えを追記
+- `skills/new/agents/openai.yaml`, `skills/lint/agents/openai.yaml`: Codex でモデルから自動起動しない設定
+- `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`: Codex と Cursor 用のマニフェストを追加
+- `README.md`: 導入手順と呼び出し方を3ハーネス分に、インデックスを skills に変更
+- `CLAUDE.md`: commands から skills への移動を反映
+
 ## 0.5.7 - 2026-07-20
 
 生成物 frontmatter に任意の試験フィールド `related`（自由記述）を導入。
