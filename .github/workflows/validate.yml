@@ -27,14 +27,14 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             base="origin/${{ github.base_ref }}"
-            commits=$(git rev-list --reverse "$base"..HEAD)
+            commits=$(git rev-list --reverse --no-merges "$base"..HEAD)
           elif [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ] \
             && git cat-file -e "${{ github.event.before }}" 2>/dev/null; then
             base="${{ github.event.before }}"
-            commits=$(git rev-list --reverse "$base"..HEAD)
+            commits=$(git rev-list --reverse --no-merges "$base"..HEAD)
           else
             echo "No base commit to diff against; checking the complete history"
-            commits=$(git rev-list --reverse HEAD)
+            commits=$(git rev-list --reverse --no-merges HEAD)
           fi
 
           asset_commits=0

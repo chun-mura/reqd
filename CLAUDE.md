@@ -4,10 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-reqd is a Claude Code plugin (not an application) that turns raw requirements input (notes / GitHub Issues / free text)
-into structured requirements docs and lints them for ambiguity. It has no build, no tests, no package manager — the
-"code" is Markdown: 2 slash commands, 2 skills, and a manifest. There is nothing to compile or run beyond editing
-these Markdown assets and satisfying the CI checks below.
+reqd is a plugin (not an application) for Claude Code, Codex and Cursor that turns raw requirements input (notes /
+GitHub Issues / free text) into structured requirements docs and lints them for ambiguity. It has no build, no tests,
+no package manager — the "code" is Markdown: 2 user-invoked skills (`new`, `lint`), 2 auto-triggered skills, and one
+manifest per harness (`.claude-plugin/`, `.codex-plugin/`, `.cursor-plugin/`). There is nothing to compile or run
+beyond editing these Markdown assets and satisfying the CI checks below.
+
+`new` and `lint` were slash commands until 0.6.0. They moved to `skills/` because Codex does not ship commands in
+plugins and Cursor recommends skills; Claude Code still invokes them as `/reqd:new` and `/reqd:lint`. They carry
+`disable-model-invocation: true` (and `agents/openai.yaml` with `allow_implicit_invocation: false` for Codex) so no
+harness starts them on its own. Keep paths in them relative to the skill directory — `${CLAUDE_PLUGIN_ROOT}` is
+not set for skill text in Codex or Cursor.
 
 **Not yet validated in a real project** — README.md says so explicitly. Treat every workflow claim (e.g. "generates
 docs/requirements/...") as unverified in production use; `docs/verification/2026-07-18-smoke-0.5.6.md` is the only
@@ -26,14 +33,14 @@ does not implement:
 Operating rule 4 in README.md ("重複禁止") forbids re-implementing anything those plugins already do — if a task
 looks like it belongs in one of them, add a pointer/handoff instead of logic here.
 
-## Architecture: commands are orchestration, skills are the single source of truth
+## Architecture: `new`/`lint` are orchestration, the other two skills are the single source of truth
 
-`commands/new.md` and `commands/lint.md` do not contain their own rules for input safety, severity levels, or
-notation choice — they **reference** two skills at fixed paths (`${CLAUDE_PLUGIN_ROOT}/skills/...`) instead of
+`skills/new/SKILL.md` and `skills/lint/SKILL.md` do not contain their own rules for input safety, severity levels, or
+notation choice — they **reference** two skills by relative path (`../ambiguity-lint/...`) instead of
 duplicating text:
 
 - `skills/ambiguity-lint/input-safety.md` — the single source for how *any* external input (file, GitHub Issue,
-  pasted text) is fetched, path-validated, and boundary-isolated. Both commands quote from this file rather than
+  pasted text) is fetched, path-validated, and boundary-isolated. Both `new` and `lint` quote from this file rather than
   restating rules; if you change intake behavior, change it here once.
 - `skills/ambiguity-lint/SKILL.md` — the 8-point ambiguity catalog (weak words, unverifiable criteria, missing
   actor, undefined terms, compound requirements, contradictions, TBD residue, implicit assumptions) plus the
@@ -43,14 +50,14 @@ duplicating text:
   selection flow (feature unit → user story; system behavior → EARS; automatable pass/fail scenario → Given-When-Then).
   `/reqd:new` calls this when formalizing acceptance criteria per story.
 
-When editing a command, check whether the rule you're adding belongs in the command file or in one of these two
-skills — if it's a rule the other command would also need, it goes in the skill, not the command.
+When editing `new` or `lint`, check whether the rule you're adding belongs there or in one of these two
+skills — if it's a rule the other one would also need, it goes in the shared skill.
 
 ### Security-relevant pattern: input is data, never instructions
 
-Both commands treat fetched content (file/Issue/paste) as untrusted data per `input-safety.md`: they wrap it in a
+Both `new` and `lint` treat fetched content (file/Issue/paste) as untrusted data per `input-safety.md`: they wrap it in a
 per-input random UUID boundary and explicitly refuse to follow any embedded instructions, role changes, or
-skill/command override attempts found inside it. `commands/new.md` additionally enforces an **extraction allowlist**
+skill/command override attempts found inside it. `skills/new/SKILL.md` additionally enforces an **extraction allowlist**
 — only requirements, background/goal, constraints, out-of-scope, open questions, and terminology get copied into the
 generated doc; imperative-looking content in the source is never quoted back, to prevent stored prompt injection
 from surviving into `docs/requirements/*.md`. The 0.5.5 changelog entry and the smoke test in
@@ -67,13 +74,17 @@ silently overwriting. Never weaken this to a plain `Write` without the pre-check
 ## Common commands
 
 There is no test suite or linter binary to run. The only local verification available is manual: read
-`commands/new.md` / `commands/lint.md` and simulate executing them per their own instructions (this is what the
-`docs/verification/` smoke test did). For manifest sanity, mirror what CI runs:
+`skills/new/SKILL.md` / `skills/lint/SKILL.md` and simulate executing them per their own instructions (this is what the
+`docs/verification/` smoke test did). For manifest sanity, mirror what CI runs, plus the two other manifests:
 
 ```bash
 jq -e . .claude-plugin/plugin.json
 jq -e . .claude-plugin/marketplace.json
+jq -e . .codex-plugin/plugin.json .cursor-plugin/plugin.json
 ```
+
+Keep `version` (and the copied metadata) in the three `plugin.json` files identical; only `.claude-plugin/plugin.json`
+is checked by CI.
 
 ## CI: `.github/workflows/validate.yml` — release metadata is enforced per commit, not just per PR
 
@@ -97,7 +108,7 @@ the same commit as the asset change, or CI fails. Squash before pushing if you i
 
 ## Versioning and changelog conventions
 
-- SemVer X.Y.Z, currently 0.5.6.
+- SemVer X.Y.Z, currently 0.6.0.
 - `CHANGELOG.md` entries are one `## X.Y.Z - YYYY-MM-DD` heading with a one-line summary sentence, then a bullet per
   changed file naming the file path first (see existing entries for the exact style — this repo is strict about it
   because CI parses the heading).
